@@ -118,9 +118,8 @@ def write_linked_list_to_file(sorted_list_head, file_name):
     chromosome_arm = node.get_chromsome_arm()
     frequency_sum = 0
 
-    # Sum all frequencies for nodes with matching chromosome arms,
-    # after reaching a different chromosome arm, write the previous
-    # frequency (divided by two since we are only counting pairs)
+    # Sum all frequencies for nodes with matching chromosome arms, after
+    # reaching a different chromosome arm, write the previous frequency.
     while node is not None:
       current_chromosome_arm = node.get_chromsome_arm()
       if current_chromosome_arm == chromosome_arm:
@@ -132,7 +131,7 @@ def write_linked_list_to_file(sorted_list_head, file_name):
 
       node = node.next
 
-    # Account for final chromosome arm after reaching the final None node
+    # Account for final chromosome arm after reaching the None node
     tsv_writer.writerow([current_chromosome_arm, frequency_sum])
 
 
