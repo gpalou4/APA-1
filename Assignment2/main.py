@@ -4,26 +4,23 @@ class Node:
   def __init__(self, loci, position):
     chromosome_regex = '^(?P<number>\d+)(?P<letter>[a-zA-Z])(?P<position>\d+\.\d+)$'
     matches = re.match(chromosome_regex, loci).groupdict()
-    self.chromosome_arm_number = int(matches['number'])
-    self.chromosome_arm_letter = matches['letter']
-    self.chromosome_arm_position = float(matches['position'])
-    self.position = position
-    self.frequency = 0
+    self._chromosome_arm_number = int(matches['number'])
+    self._chromosome_arm_letter = matches['letter']
+    self._chromosome_arm_position = float(matches['position'])
+    self._position = position
+    self._frequency = 0
     self.next = None
 
   def is_matching_within_distance(self, node, distance_threshold):
-    if not self.is_same_chromosome_arm(node):
+    if self.get_chromsome_arm() != node.get_chromsome_arm():
       return False
 
+    position = node.get_position()
     distance = math.sqrt(
-      math.pow(self.position[0] - node.position[0], 2)
-      + math.pow(self.position[1] - node.position[1], 2)
+      math.pow(self._position[0] - position[0], 2)
+      + math.pow(self._position[1] - position[1], 2)
     )
     return distance <= distance_threshold
-
-  def is_same_chromosome_arm(self, node):
-    return self.chromosome_arm_number == node.chromosome_arm_number \
-      and self.chromosome_arm_letter == node.chromosome_arm_letter
 
   """
     When two nodes are on the same chromosome number and letter, compare the position.
@@ -31,19 +28,37 @@ class Node:
     When two nodes are on different chromosome numbers, compare just the numbers.
   """
   def has_larger_loci(self, node):
-    if self.chromosome_arm_number == node.chromosome_arm_number:
-      if self.chromosome_arm_letter == node.chromosome_arm_letter:
-        return self.chromosome_arm_position > node.chromosome_arm_position
+    arm_number = node.get_chromosome_arm_number()
+    arm_letter = node.get_chromosome_arm_letter()
+    arm_position = node.get_chromosome_arm_position()
 
-      return self.chromosome_arm_letter > node.chromosome_arm_letter
+    if self._chromosome_arm_number == arm_number:
+      if self._chromosome_arm_letter == arm_letter:
+        return self._chromosome_arm_position > arm_position
 
-    return self.chromosome_arm_number > node.chromosome_arm_number
+      return self._chromosome_arm_letter > arm_letter
+    return self._chromosome_arm_number > arm_number
 
   def increment_frequency(self):
-    self.frequency += 1
+    self._frequency += 1
+
+  def get_frequency(self):
+    return self._frequency
 
   def get_chromsome_arm(self):
-    return str(self.chromosome_arm_number) + self.chromosome_arm_letter
+    return str(self._chromosome_arm_number) + self._chromosome_arm_letter
+
+  def get_position(self):
+    return self._position
+
+  def get_chromosome_arm_number(self):
+    return self._chromosome_arm_number
+
+  def get_chromosome_arm_letter(self):
+    return self._chromosome_arm_letter
+
+  def get_chromosome_arm_position(self):
+    return self._chromosome_arm_position
 
 
 def read_file_to_linked_list(file_name):
@@ -60,7 +75,6 @@ def read_file_to_linked_list(file_name):
       else:
         tail.next = node
         tail = node
-
   return head
 
 
@@ -123,10 +137,10 @@ def write_linked_list_to_file(sorted_list_head, file_name):
     while node is not None:
       current_chromosome_arm = node.get_chromsome_arm()
       if current_chromosome_arm == chromosome_arm:
-        frequency_sum += node.frequency
+        frequency_sum += node.get_frequency()
       else:
         tsv_writer.writerow([chromosome_arm, frequency_sum])
-        frequency_sum = node.frequency
+        frequency_sum = node.get_frequency()
         chromosome_arm = current_chromosome_arm
 
       node = node.next

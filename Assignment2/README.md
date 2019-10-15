@@ -31,3 +31,5 @@ $ time /usr/local/bin/python3 main.py input.txt 1.5
 Input5.txt - 1,000,000 nodes
 
 Expected to take 600+ hours
+
+In order for this to run within a reasonable amount of time, I would suggest using a faster sorting method or being able to use another data structure for comparing chromosome arm positions.
