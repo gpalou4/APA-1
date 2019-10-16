@@ -32,4 +32,8 @@ Input5.txt - 1,000,000 nodes
 
 Expected to take 600+ hours
 
+--
+
 In order for this to run within a reasonable amount of time, I would suggest using a faster sorting method or being able to use another data structure for comparing chromosome arm positions.
+
+The other thing I noticed is that adding more function calls in Python slows everything down. When I switched to adding more encapsulation, it slowed the entire program down (as expected), however, over the large amount of calls in the 10,000 and 100,000 input files, this added up.
