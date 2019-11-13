@@ -69,12 +69,24 @@ class KDTree:
     chosen_branch, unchosen_branch = self._get_branches(comparision_value, patient_value)
 
     if chosen_branch is not None:
-      nearest_patients += chosen_branch._create_grouping(patient, max_distance, max_patients_in_grouping, features, farthest_distance)
+      nearest_patients += chosen_branch._create_grouping(
+        patient,
+        max_distance,
+        max_patients_in_grouping,
+        features,
+        farthest_distance
+      )
 
     patient_distance = patient_value - comparision_value
     if self._should_check_unchosen_branch(farthest_distance, patient_distance, nearest_patients, max_patients_in_grouping):
       if unchosen_branch is not None:
-        nearest_patients += unchosen_branch._create_grouping(patient, max_distance, max_patients_in_grouping, features, farthest_distance)
+        nearest_patients += unchosen_branch._create_grouping(
+          patient,
+          max_distance,
+          max_patients_in_grouping,
+          features,
+          farthest_distance
+        )
 
     return nearest_patients
 
