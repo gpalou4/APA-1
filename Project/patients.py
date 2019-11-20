@@ -50,8 +50,8 @@ class Patient:
     )
 
   @staticmethod
-  def parse_patients_from_file():
-    with open("features_filt.csv","r") as features:
+  def parse_patients_from_file(self, filename):
+    with open(filename,"r") as features:
       patients = []
       for line in features.readlines()[1:]:
         parsed_line = line.strip().split(",")
