@@ -50,7 +50,7 @@ class Patient:
     )
 
   @staticmethod
-  def parse_patients_from_file(self, filename):
+  def parse_patients_from_file(filename):
     with open(filename,"r") as features:
       patients = []
       for line in features.readlines()[1:]:
