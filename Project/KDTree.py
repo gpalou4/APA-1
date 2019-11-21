@@ -24,6 +24,12 @@ class KDTree:
     return KDTree(median_patient, index_to_split, left_tree, right_tree)
 
 
+  def predict_outcome(self, patient, max_distance, max_patients_in_grouping, *features):
+    nearest_patients = self.create_grouping(patient, max_distance, max_patients_in_grouping, *features)
+    outcomes = [patient.get_outcome() for patient in nearest_patients]
+    return max(set(outcomes), key=outcomes.count)
+
+
   def create_grouping(self, patient, max_distance, max_patients_in_grouping, *features):
     if max_distance <= 0 or max_patients_in_grouping < 1:
       return []
