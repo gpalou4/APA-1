@@ -1,3 +1,5 @@
+import bisect
+
 class KDTree:
   def __init__(self, value=None, index=None, left_tree=None, right_tree=None):
     self._value = value
@@ -8,15 +10,13 @@ class KDTree:
 
   @staticmethod
   def build(patients, depth=0):
-    points = [patient.get_features() for patient in patients]
-
-    if len(points) <= 0:
+    if len(patients) <= 0:
       return None
 
-    index_to_split = depth % len(points[0])
-    points.sort(key=lambda point: point[index_to_split])
+    index_to_split = depth % len(patients[0].get_features())
+    patients.sort(key=lambda patient: patient.get_features()[index_to_split])
 
-    median_index = len(points) // 2
+    median_index = len(patients) // 2
     median_patient = patients[median_index]
     left_tree = KDTree.build(patients[:median_index], depth + 1)
     right_tree = KDTree.build(patients[median_index + 1:], depth + 1)
@@ -24,73 +24,61 @@ class KDTree:
     return KDTree(median_patient, index_to_split, left_tree, right_tree)
 
 
-  def is_leaf(self):
-    return self._left_tree is None and self._right_tree is None
-
-
-  def get_value(self):
-    return self._value
-
-
-  def get_left_tree(self):
-    return self._left_tree
-
-
-  def get_right_tree(self):
-    return self._right_tree
-
-
-  def predict_outcome(self, patient, max_distance, max_patients_in_grouping, *features):
-    nearest_patients = self.create_grouping(patient, max_distance, max_patients_in_grouping, *features)
-    outcomes = [patient.get_outcome() for patient in nearest_patients]
-    return max(set(outcomes), key=outcomes.count)
-
-
   def create_grouping(self, patient, max_distance, max_patients_in_grouping, *features):
     if max_distance <= 0 or max_patients_in_grouping < 1:
       return []
 
     nearest_patients = self._create_grouping(patient, max_distance, max_patients_in_grouping, features)
-    return sorted(nearest_patients, key=lambda p: p.compute_distance(patient, *features))[:max_patients_in_grouping]
+    return list(map(lambda nearest_patient: nearest_patient[1], nearest_patients))
 
 
-  def _create_grouping(self, patient, max_distance, max_patients_in_grouping, features, farthest_distance=None):
-    nearest_patients = []
+  def _create_grouping(self, patient, max_distance, max_patients_in_grouping, features, nearest_patients=[]):
     distance = self._value.compute_distance(patient, *features)
-
     if distance <= max_distance:
-      nearest_patients.append(self._value)
-      if farthest_distance is None or distance > farthest_distance:
-        farthest_distance = distance
+      self._add_nearest_patient(distance, nearest_patients, max_patients_in_grouping)
 
-    comparision_value = self._value.get_features()[self._index]
-    patient_value = patient.get_features()[self._index]
-    chosen_branch, unchosen_branch = self._get_branches(comparision_value, patient_value)
+    chosen_branch, unchosen_branch = self._get_branches(patient)
 
     if chosen_branch is not None:
-      nearest_patients += chosen_branch._create_grouping(
+      nearest_patients = chosen_branch._create_grouping(
         patient,
         max_distance,
         max_patients_in_grouping,
         features,
-        farthest_distance
+        nearest_patients
       )
 
-    patient_distance = patient_value - comparision_value
-    if self._should_check_unchosen_branch(farthest_distance, patient_distance, nearest_patients, max_patients_in_grouping):
+    if self._should_check_unchosen_branch(patient, nearest_patients, features, max_patients_in_grouping):
       if unchosen_branch is not None:
-        nearest_patients += unchosen_branch._create_grouping(
+        nearest_patients = unchosen_branch._create_grouping(
           patient,
           max_distance,
           max_patients_in_grouping,
           features,
-          farthest_distance
+          nearest_patients
         )
 
     return nearest_patients
 
 
-  def _get_branches(self, comparision_value, patient_value):
+  # Insert the distance and current pivot patient into nearest_patients
+  # When the distance is farther than the farthest nearest patient,
+  # replace it at the front of the list for future comparisons.
+  def _add_nearest_patient(self, distance, nearest_patients, max_patients_in_grouping):
+    nearest_patient = (-distance, self._value)
+    if len(nearest_patients) < max_patients_in_grouping:
+      bisect.insort(nearest_patients, nearest_patient)
+    elif nearest_patients[0][0] < -distance:
+      nearest_patients[0] = nearest_patient
+
+
+  # Choose the left branch when the patient has a smaller
+  # value than the current pivot patient value and the
+  # right branch when the value is greater than or equal.
+  def _get_branches(self, patient):
+    comparision_value = self._value.get_features()[self._index]
+    patient_value = patient.get_features()[self._index]
+
     if patient_value < comparision_value:
       chosen_branch = self._left_tree
       unchosen_branch = self._right_tree
@@ -101,24 +89,17 @@ class KDTree:
     return chosen_branch, unchosen_branch
 
 
-  def _should_check_unchosen_branch(self, farthest_distance, patient_distance, nearest_patients, max_patients_in_grouping):
-    return (farthest_distance is not None and patient_distance <= farthest_distance) \
+  # Determine if the unchosen region is intersected by the radius
+  # from the farthest nearest patient so far. Distance to the region
+  # is simply the absolute value between the pivot axis and the other
+  # branch axis value. If there are less than max_patients_in_grouping
+  # patients found, check both branches.
+  def _should_check_unchosen_branch(self, patient, nearest_patients, features, max_patients_in_grouping):
+    comparision_value = self._value.get_features()[self._index]
+    patient_value = patient.get_features()[self._index]
+
+    distance_from_patient_to_farthest_node = patient.compute_distance(nearest_patients[0][1], *features)
+    distance_from_patient_to_unchosen_region = abs(patient_value - comparision_value)
+
+    return distance_from_patient_to_unchosen_region <= distance_from_patient_to_farthest_node \
       or len(nearest_patients) < max_patients_in_grouping
-
-
-  def print(self, indentation=0):
-    if self.is_leaf():
-      print(' ' * indentation, 'value for index', self._index, ':', self._value)
-    else:
-      print(' ' * indentation, 'median value for index', self._index, ':', self._value)
-      print(' ' * indentation, 'left')
-      if self._left_tree is None:
-        print(' ' * (indentation + 2), None)
-      else:
-        self._left_tree.print(indentation + 2)
-
-      print(' ' * indentation, 'right')
-      if self._right_tree is None:
-        print(' ' * (indentation + 2), None)
-      else:
-        self._right_tree.print(indentation + 2)
