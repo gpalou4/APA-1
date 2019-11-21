@@ -81,7 +81,7 @@ class test_Patient(unittest.TestCase):
         assertEqual(comorbidity_score, 3, msg = "Patient comorbidity_score is not correctly matched")
         assertEqual(hospital_admission_id, 28766, msg = "Patient hospital_admission_id is not correctly matched")
 
-        def test_has_feature(self):
+    def test_has_feature(self):
 
          # Create new objects to be passed on to the function to test
         patient = Patient(50, 0, 1, 62, 50.33, 0, 1.75, 27.3,3,2,6152,38.81,3,28766)
@@ -118,9 +118,9 @@ class test_Patient(unittest.TestCase):
         assertTrue(comorbidity_score, msg = "Patient comorbidity_score is not correctly matched")
         assertTrue(hospital_admission_id, msg = "Patient hospital_admission_id is not correctly matched")
 
-        def test_compute_distance(self):
+    def test_compute_distance(self):
 
-          # Create new objects to be passed on to the function to test
+        # Create new objects to be passed on to the function to test
         patient1 = Patient(50, 0, 1, 62, 50.33, 0, 1.75, 27.3,3,2,6152,38.81,3,28766)
         patient2 = Patient(78, 1, 1, 89, 48.63, 1, 1.33, 23.3,2,1,2125,35.75,3,15161)
 
@@ -130,4 +130,5 @@ class test_Patient(unittest.TestCase):
         # Assert the values returned by the function to test  
         assertEqual(distance, 2.2674392697169483, msg = "The distance between both patients is incorrect")
 
-
+if __name__ == '__main__':
+    unittest.main()
