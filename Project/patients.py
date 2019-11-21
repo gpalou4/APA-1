@@ -1,4 +1,4 @@
-import math
+import csv
 
 class Patient:
 
@@ -63,7 +63,7 @@ class Patient:
         sex = int(parsed_line[5])
         length_of_hospital = float(parsed_line[6])
         bmi = float(parsed_line[7])
-        #number_of_medications = parsed_line[8]
+        number_of_medications = parsed_line[8]
         number_of_additives = float(parsed_line[8])
         number_of_procedures = float(parsed_line[9])
         duration_of_medications = float(parsed_line[10])
@@ -92,12 +92,19 @@ class Patient:
     return hasattr(self, '_' + feature)
 
   def compute_distance(self, patient, *features):
-    if features:
-      list_of_features_1 = []
-      list_of_features_2 = []
-      for feature in features:
-        tuple_of_features_1 = tuple(list_of_features_1.append(self.get_feature()))
-        tuple_of_features_2 = tuple(list_of_features_2.append(patient.get_feature()))
-      return math.sqrt(sum([(a - b) ** 2 for a, b in zip(tuple_of_features_1, tuple_of_features_2)]))
-    else:
-      return math.sqrt(sum([(a - b) ** 2 for a, b in zip(self.get_features(), patient.get_features())]))
+    # if features:
+    list_of_features_1 = []
+    list_of_features_2 = []
+    for feature in features:
+      if not self.has_feature(feature):
+        raise Error('not found')
+
+      tuple_of_features_1 = list_of_features_1.append(self.get_feature())
+      tuple_of_features_2 = list_of_features_2.append(patient.get_feature())
+
+    tuple_of_features_1 = tuple_of_features_1 or self.get_features()
+    tuple_of_features_2 = tuple_of_features_2 or patient.get_features()
+
+    return math.sqrt(sum([(a - b) ** 2 for a, b in zip(tuple_of_features_1, tuple_of_features_2)]))
+    # else:
+    #   return math.sqrt(sum([(a - b) ** 2 for a, b in zip(self.get_features(), patient.get_features())]))

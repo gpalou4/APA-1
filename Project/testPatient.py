@@ -81,6 +81,18 @@ class test_Patient(unittest.TestCase):
         assertEqual(comorbidity_score, 3, msg = "Patient comorbidity_score is not correctly matched")
         assertEqual(hospital_admission_id, 28766, msg = "Patient hospital_admission_id is not correctly matched")
 
+
+        items = [
+            ('patient_id', 50),
+            ('icustay_sequence', 1),
+            ...
+        ]
+
+        for item in items:
+            message = item[0] + ' is not equal'
+            self.assertEqual(item[0], item[1], msg=message)
+
+
     def test_has_feature(self):
 
          # Create new objects to be passed on to the function to test
