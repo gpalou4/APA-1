@@ -8,6 +8,26 @@ class KDTree:
     self._right_tree = right_tree
 
 
+  def get_value(self):
+    return self._value
+
+
+  def get_left_tree(self):
+    return self._left_tree
+
+
+  def get_right_tree(self):
+    return self._right_tree
+
+
+  def get_index(self):
+    return self._index
+
+
+  def is_leaf(self):
+    return self._left_tree is None and self._right_tree is None
+
+
   @staticmethod
   def build(patients, depth=0):
     if len(patients) <= 0:
@@ -43,7 +63,7 @@ class KDTree:
     if distance <= max_distance:
       self._add_nearest_patient(distance, nearest_patients, max_patients_in_grouping)
 
-    chosen_branch, unchosen_branch = self._get_branches(patient)
+    chosen_branch, unchosen_branch = self._get_chosen_and_unchosen_branches(patient)
 
     if chosen_branch is not None:
       nearest_patients = chosen_branch._create_grouping(
@@ -81,7 +101,7 @@ class KDTree:
   # Choose the left branch when the patient has a smaller
   # value than the current pivot patient value and the
   # right branch when the value is greater than or equal.
-  def _get_branches(self, patient):
+  def _get_chosen_and_unchosen_branches(self, patient):
     comparision_value = self._value.get_features()[self._index]
     patient_value = patient.get_features()[self._index]
 
@@ -101,11 +121,13 @@ class KDTree:
   # branch axis value. If there are less than max_patients_in_grouping
   # patients found, check both branches.
   def _should_check_unchosen_branch(self, patient, nearest_patients, features, max_patients_in_grouping):
+    if len(nearest_patients) < max_patients_in_grouping:
+      return True
+
     comparision_value = self._value.get_features()[self._index]
     patient_value = patient.get_features()[self._index]
 
     distance_from_patient_to_farthest_node = patient.compute_distance(nearest_patients[0][1], *features)
     distance_from_patient_to_unchosen_region = abs(patient_value - comparision_value)
 
-    return distance_from_patient_to_unchosen_region <= distance_from_patient_to_farthest_node \
-      or len(nearest_patients) < max_patients_in_grouping
+    return distance_from_patient_to_unchosen_region <= distance_from_patient_to_farthest_node
