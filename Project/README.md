@@ -2,6 +2,7 @@
 
 Using MIMIC-II data, we compiled 2994 patients of the following features:
 
+```
   Outcome = dying in the hospital during the stay
   Age
   Sex (0 = M, 1 = F)
@@ -13,6 +14,7 @@ Using MIMIC-II data, we compiled 2994 patients of the following features:
   % of lab events marked as abnormal
   Sum of comorbidities
   Number of medications
+```
 
 Some of these features have been scaled to more accurately calculate Euclidean distance.
 
