@@ -4,12 +4,12 @@ from KDTree import KDTree
 
 class test_KDTree(unittest.TestCase):
     def setUp(self):
-        self._patient = Patient(1, 48, 0, 1.51, 28.1, 2, 2, 3, 1010, 37.99, 2)
+        self._patient = Patient(100, 1, 100, 100, 48, 0, 1.51, 28.1, 2, 2, 3, 1010, 37.99, 2, 4)
 
-        self._patient1 = Patient(0, 50.33, 0, 1.75, 27.3, 3, 3, 2, 6152, 38.81, 3)
-        self._patient2 = Patient(1, 48.63, 1, 1.33, 23.3, 2, 1, 2, 2125, 35.75, 3)
-        self._patient3 = Patient(1, 38.23, 1, 2.31, 30.1, 1, 3, 1, 1231, 33.75, 2)
-        self._patient4 = Patient(1, 48.63, 1, 1.89, 29.8, 1, 1, 2, 4533, 39.11, 1)
+        self._patient1 = Patient(100, 0, 100, 100, 50.33, 0, 1.75, 27.3, 3, 3, 2, 6152, 38.81, 3, 4)
+        self._patient2 = Patient(100, 1, 100, 100, 48.63, 1, 1.33, 23.3, 2, 1, 2, 2125, 35.75, 3, 4)
+        self._patient3 = Patient(100, 1, 100, 100, 38.23, 1, 2.31, 30.1, 1, 3, 1, 1231, 33.75, 2, 4)
+        self._patient4 = Patient(100, 1, 100, 100, 48.63, 1, 1.89, 29.8, 1, 1, 2, 4533, 39.11, 1, 4)
 
         patients = [
             self._patient1,
