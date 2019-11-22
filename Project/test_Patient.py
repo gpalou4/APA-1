@@ -1,5 +1,5 @@
 import unittest
-from patients import Patient
+from Patient import Patient
 from KDTree import KDTree
 
 class test_Patient(unittest.TestCase):

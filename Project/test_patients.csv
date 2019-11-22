@@ -1,0 +1,2 @@
+subject_id,hospital_expire_flg,subject_icustay_seq,icustay_id,icustay_admit_age,sex,los,bmi,additives,procedureevents,duration,abnormal,comorbidity,hadm_id,medication_count
+78,0,1,89,-1.35661215462971,0,-0.563416284098527,0,1,1,-0.101535929330484,0.109183865876968,3,15161,1
